@@ -1,29 +1,38 @@
 
 var net = require("net")
 
+
+var util = require('util');
+
+
 var telnetServer = net.createServer()
 var ActiveUserList = []
 var DisconnectedUserList = []
+
 telnetServer.on('connection',function(client){
 	client.name = client.remoteAddress+":"+client.remotePort;
 	ActiveUserList.push(client)
-	broadcast(client.name+" has joined the conversation\r\n")
+	broadcast(client.name+" has joined the conversation\r\n",client)
 	client.on('data',function(data){
-		broadcast(message,client)
+		broadcast(data,client);
 	})
 })
 
 function broadcast(message,client){
 	var i; 
 	for(var i=0;i<ActiveUserList.length;i++){
+		console.log(ActiveUserList[i].name);
 		if (client !== ActiveUserList[i]){
-			if (ActiveUserList[i].writeable){
+			console.log(util.inspect(ActiveUserList[i], false, null));
+			if (ActiveUserList[i].writeable === true){
+				console.log("I am here");
 				ActiveUserList[i].write(client.name+":"+message);
 			}
 			else{
+				console.log("Can't write to socket");
+//				broadcast(ActiveUserList[i].name+" has left the conversation\r\n",client);
 				DisconnectedUserList.push(ActiveUserList[i]);
 				ActiveUserList[i].destroy();
-				broadcast(ActiveUserList[i].name+" has left the conversation\r\n")
 			}
 		}
 	}
@@ -33,4 +42,4 @@ function broadcast(message,client){
 	}
 }
 
-telnetServer.listen(23);
+telnetServer.listen(9000);
