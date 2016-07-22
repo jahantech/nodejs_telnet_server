@@ -24,13 +24,12 @@ function broadcast(message,client){
 		console.log(ActiveUserList[i].name);
 		if (client !== ActiveUserList[i]){
 			console.log(util.inspect(ActiveUserList[i], false, null));
-			if (ActiveUserList[i].writeable === true){
+			if (ActiveUserList[i].writable === true){
 				console.log("I am here");
 				ActiveUserList[i].write(client.name+":"+message);
 			}
 			else{
 				console.log("Can't write to socket");
-//				broadcast(ActiveUserList[i].name+" has left the conversation\r\n",client);
 				DisconnectedUserList.push(ActiveUserList[i]);
 				ActiveUserList[i].destroy();
 			}
